@@ -198,10 +198,17 @@ function! ag#AgHelp(cmd,args)
 endfunction
 
 function! s:guessProjectRoot()
-  let l:splitsearchdir = split(getcwd(), "/")
+  let l:splitsign = '/'
+  for l:os in ['win16', 'win32', 'win64']
+    if has(l:os)
+      let l:splitsign = '\'
+      break
+    endif
+  endfor
+  let l:splitsearchdir = split(getcwd(), l:splitsign)
 
   while len(l:splitsearchdir) > 2
-    let l:searchdir = '/'.join(l:splitsearchdir, '/').'/'
+    let l:searchdir = l:splitsign.join(l:splitsearchdir, l:splitsign).l:splitsign
     for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
       " found it! Return the dir
       if filereadable(l:searchdir.l:marker) || isdirectory(l:searchdir.l:marker)
