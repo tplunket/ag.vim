@@ -218,6 +218,7 @@ endfunction
 function! s:guessProjectRoot()
   let l:searchdir = getcwd()
 
+  " this code will find these directories or files at the root on Windows but not on other platforms
   while len(l:searchdir) > 2
     for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
       " the forward slash works as a dirsep on Windows too.
