@@ -217,6 +217,9 @@ endfunction
 
 function! s:guessProjectRoot()
   let l:searchdir = getcwd()
+  if has('win16') || has('win32')
+      let l:searchdir = substitute(l:searchdir, '\', '/', 'g')
+  endif
 
   " this code will find these directories or files at the root on Windows but not on other platforms
   while len(l:searchdir) > 2
@@ -228,7 +231,7 @@ function! s:guessProjectRoot()
         return l:searchdir
       endif
     endfor
-    let l:searchdir = substitute(l:searchdir, '\(.*\)[\\/][^\\/]*$', '\1', "")
+    let l:searchdir = substitute(l:searchdir, '\(.*\)/[^/]*$', '\1', "")
   endwhile
 
   " Nothing found, fallback to current working dir
