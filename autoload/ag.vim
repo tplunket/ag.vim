@@ -114,7 +114,7 @@ function! ag#Ag(cmd, args)
     set t_te=
     if g:ag_working_path_mode ==? 'r' " Try to find the projectroot for current buffer
       let l:cwd_back = getcwd()
-      let l:cwd = s:guessProjectRoot()
+      let l:cwd = g:Ag_get_project_root()
       try
         exe "lcd ".l:cwd
       catch
@@ -237,3 +237,7 @@ function! s:guessProjectRoot()
   " Nothing found, fallback to current working dir
   return getcwd()
 endfunction
+
+if !exists("g:Ag_get_project_root")
+    let g:Ag_get_project_root = function("s:guessProjectRoot")
+endif
