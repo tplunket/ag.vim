@@ -57,7 +57,7 @@ if !exists("g:ag_mapping_message")
 endif
 
 if !exists("g:ag_working_path_mode")
-    let g:ag_working_path_mode = 'c'
+  let g:ag_working_path_mode = 'c'
 endif
 
 function! ag#AgBuffer(cmd, args)
@@ -218,10 +218,11 @@ endfunction
 function! s:guessProjectRoot()
   let l:searchdir = getcwd()
   if has('win16') || has('win32')
-      let l:searchdir = substitute(l:searchdir, '\', '/', 'g')
+    let l:searchdir = substitute(l:searchdir, '\', '/', 'g')
   endif
 
-  " this code will find these directories or files at the root on Windows but not on other platforms
+  " this code will not look for these directories in the root directory or any single letter
+  " directory at root on non-Windows platforms
   while len(l:searchdir) > 2
     for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
       " the forward slash works as a dirsep on Windows too.
@@ -239,5 +240,7 @@ function! s:guessProjectRoot()
 endfunction
 
 if !exists("g:Ag_get_project_root")
-    let g:Ag_get_project_root = function("s:guessProjectRoot")
+  let g:Ag_get_project_root = function("s:guessProjectRoot")
 endif
+
+" vim:ts=2:sw=2:et
