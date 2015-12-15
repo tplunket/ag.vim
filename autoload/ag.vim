@@ -1,17 +1,26 @@
 " NOTE: You must, of course, install ag / the_silver_searcher
 
-" FIXME: Delete deprecated options below on or after 15-7 (6 months from when they were changed) {{{
+" FIXME: Delete deprecated options below on or after 2016-4 (6 months from when the deprecation warning was added) {{{
 
 if exists("g:agprg")
   let g:ag_prg = g:agprg
+  echohl WarningMsg
+  call input('g:agprg is deprecated and will be removed. Please use g:ag_prg')
+  echohl None
 endif
 
 if exists("g:aghighlight")
   let g:ag_highlight = g:aghighlight
+  echohl WarningMsg
+  call input('g:aghighlight is deprecated and will be removed. Please use g:ag_highlight')
+  echohl None
 endif
 
 if exists("g:agformat")
   let g:ag_format = g:agformat
+  echohl WarningMsg
+  call input('g:agformat is deprecated and will be removed. Please use g:ag_format')
+  echohl None
 endif
 
 " }}} FIXME: Delete the deprecated options above on or after 15-7 (6 months from when they were changed)
@@ -78,6 +87,11 @@ function! ag#Ag(cmd, args)
   else
     let l:grepargs = a:args . join(a:000, ' ')
   end
+
+  if empty(l:grepargs)
+    echo "Usage: ':Ag {pattern}' (or just :Ag to search for the word under the cursor). See ':help :Ag' for more information."
+    return
+  endif
 
   " Format, used to manage column jump
   if a:cmd =~# '-g$'
@@ -169,8 +183,12 @@ function! ag#Ag(cmd, args)
         echom "ag.vim keys: q=quit <cr>/e/t/h/v=enter/edit/tab/split/vsplit go/T/H/gv=preview versions of same"
       endif
     endif
-  else
+  else " Close the split window automatically:
+    cclose
+    lclose
+    echohl WarningMsg
     echom 'No matches for "'.a:args.'"'
+    echohl None
   endif
 endfunction
 
@@ -198,24 +216,22 @@ function! ag#AgHelp(cmd,args)
 endfunction
 
 function! s:guessProjectRoot()
-  let l:splitsign = '/'
-  for l:os in ['win16', 'win32', 'win64']
-    if has(l:os)
-      let l:splitsign = '\'
-      break
-    endif
-  endfor
-  let l:splitsearchdir = split(getcwd(), l:splitsign)
+  let l:searchdir = getcwd()
+  if has('win16') || has('win32')
+      let l:searchdir = substitute(l:searchdir, '\', '/', 'g')
+  endif
 
-  while len(l:splitsearchdir) > 2
-    let l:searchdir = l:splitsign.join(l:splitsearchdir, l:splitsign).l:splitsign
+  " this code will find these directories or files at the root on Windows but not on other platforms
+  while len(l:searchdir) > 2
     for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
-      " found it! Return the dir
-      if filereadable(l:searchdir.l:marker) || isdirectory(l:searchdir.l:marker)
+      " the forward slash works as a dirsep on Windows too.
+      let l:item = l:searchdir.'/'.l:marker
+      if filereadable(l:item) || isdirectory(l:item)
+        " found it! Return the dir
         return l:searchdir
       endif
     endfor
-    let l:splitsearchdir = l:splitsearchdir[0:-2] " Splice the list to get rid of the tail directory
+    let l:searchdir = substitute(l:searchdir, '\(.*\)/[^/]*$', '\1', "")
   endwhile
 
   " Nothing found, fallback to current working dir
