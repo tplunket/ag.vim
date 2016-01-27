@@ -57,7 +57,7 @@ if !exists("g:ag_mapping_message")
 endif
 
 if !exists("g:ag_working_path_mode")
-    let g:ag_working_path_mode = 'c'
+  let g:ag_working_path_mode = 'c'
 endif
 
 function! ag#AgBuffer(cmd, args)
@@ -216,13 +216,14 @@ function! ag#AgHelp(cmd,args)
 endfunction
 
 function! s:guessProjectRoot()
-  let l:searchdir = getcwd()
+  let l:startdir = getcwd()
   if has('win16') || has('win32')
-      let l:searchdir = substitute(l:searchdir, '\', '/', 'g')
+    let l:startdir = substitute(l:startdir, '\', '/', 'g')
   endif
+  let l:searchdirs = split(l:startdir, '/', 1)
 
-  " this code will find these directories or files at the root on Windows but not on other platforms
-  while len(l:searchdir) > 2
+  while len(l:searchdirs) > 0
+    let l:searchdir = join(l:searchdirs, '/')
     for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
       " the forward slash works as a dirsep on Windows too.
       let l:item = l:searchdir.'/'.l:marker
@@ -231,7 +232,8 @@ function! s:guessProjectRoot()
         return l:searchdir
       endif
     endfor
-    let l:searchdir = substitute(l:searchdir, '\(.*\)/[^/]*$', '\1', "")
+    " pop the last dir off the list
+    let l:searchdirs = l:searchdirs[:-2]
   endwhile
 
   " Nothing found, fallback to current working dir
