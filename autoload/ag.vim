@@ -116,15 +116,16 @@ function! ag#Ag(cmd, args)
       let l:cwd_back = getcwd()
       let l:cwd = g:Ag_get_project_root()
       try
-        exe "lcd ".l:cwd
+        exe "lcd" l:cwd
+        echo 'Searching from' l:cwd
       catch
-        echom 'Failed to change directory to:'.l:cwd
+        echom 'Failed to change directory to' l:cwd
       finally
-        silent! execute a:cmd . " " . escape(l:grepargs, '|')
+        silent! execute a:cmd escape(l:grepargs, '|')
         exe "lcd ".l:cwd_back
       endtry
     else " Someone chose an undefined value or 'c' so we revert to the default
-      silent! execute a:cmd . " " . escape(l:grepargs, '|')
+      silent! execute a:cmd escape(l:grepargs, '|')
     endif
   finally
     let &grepprg=l:grepprg_bak
