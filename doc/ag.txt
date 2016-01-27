@@ -95,7 +95,7 @@ For background, see: https://github.com/rking/ag.vim/pull/88
 A mapping that describes where ag will be run. Default is the current working
 directory. Specifying 'r' as the argument will tell it to run from the project
 rootdirectory. For now any other mapping will result to the default. The
-function that specifies the root directory can be customized with
+function that locates the root directory can be customized with
 |g:Ag_get_project_root|. Example: >
   let g:ag_working_path_mode='r'
 <
