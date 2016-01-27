@@ -57,7 +57,7 @@ if !exists("g:ag_mapping_message")
 endif
 
 if !exists("g:ag_working_path_mode")
-    let g:ag_working_path_mode = 'c'
+  let g:ag_working_path_mode = 'c'
 endif
 
 function! ag#AgBuffer(cmd, args)
@@ -114,17 +114,18 @@ function! ag#Ag(cmd, args)
     set t_te=
     if g:ag_working_path_mode ==? 'r' " Try to find the projectroot for current buffer
       let l:cwd_back = getcwd()
-      let l:cwd = s:guessProjectRoot()
+      let l:cwd = g:Ag_get_project_root()
       try
-        exe "lcd ".l:cwd
+        exe "lcd" l:cwd
+        echo 'Searching from' l:cwd
       catch
-        echom 'Failed to change directory to:'.l:cwd
+        echom 'Failed to change directory to' l:cwd
       finally
-        silent! execute a:cmd . " " . escape(l:grepargs, '|')
+        silent! execute a:cmd escape(l:grepargs, '|')
         exe "lcd ".l:cwd_back
       endtry
     else " Someone chose an undefined value or 'c' so we revert to the default
-      silent! execute a:cmd . " " . escape(l:grepargs, '|')
+      silent! execute a:cmd escape(l:grepargs, '|')
     endif
   finally
     let &grepprg=l:grepprg_bak
@@ -232,3 +233,9 @@ function! s:guessProjectRoot()
   " Nothing found, fallback to current working dir
   return getcwd()
 endfunction
+
+if !exists("g:Ag_get_project_root")
+  let g:Ag_get_project_root = function("s:guessProjectRoot")
+endif
+
+" vim:ts=2:sw=2:et
