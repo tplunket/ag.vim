@@ -223,10 +223,10 @@ function! s:guessProjectRoot()
   let l:searchdirs = split(l:startdir, '/', 1)
 
   while len(l:searchdirs) > 0
-    let l:searchdir = join(l:searchdirs, '/')
+    " the forward slash works as a dirsep on Windows too.
+    let l:searchdir = join(l:searchdirs, '/') . '/'
     for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
-      " the forward slash works as a dirsep on Windows too.
-      let l:item = l:searchdir.'/'.l:marker
+      let l:item = l:searchdir . l:marker
       if filereadable(l:item) || isdirectory(l:item)
         " found it! Return the dir
         return l:searchdir
