@@ -57,7 +57,11 @@ if !exists("g:ag_mapping_message")
 endif
 
 if !exists("g:ag_working_path_mode")
-    let g:ag_working_path_mode = 'c'
+  let g:ag_working_path_mode = 'c'
+endif
+
+if !exists("g:ag_working_path_root_markers")
+  let g:ag_working_path_root_markers = ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml', 'tags', 'TAGS']
 endif
 
 function! ag#AgBuffer(cmd, args)
@@ -220,7 +224,7 @@ function! s:guessProjectRoot()
 
   while len(l:splitsearchdir) > 2
     let l:searchdir = '/'.join(l:splitsearchdir, '/').'/'
-    for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
+    for l:marker in g:ag_working_path_root_markers
       " found it! Return the dir
       if filereadable(l:searchdir.l:marker) || isdirectory(l:searchdir.l:marker)
         return l:searchdir
@@ -232,3 +236,5 @@ function! s:guessProjectRoot()
   " Nothing found, fallback to current working dir
   return getcwd()
 endfunction
+
+" vim:ts=2:sw=2:et
