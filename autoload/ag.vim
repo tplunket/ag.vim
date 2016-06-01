@@ -60,6 +60,10 @@ if !exists("g:ag_working_path_mode")
   let g:ag_working_path_mode = 'c'
 endif
 
+if !exists("g:ag_working_path_root_markers")
+  let g:ag_working_path_root_markers = ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml', 'tags', 'TAGS']
+endif
+
 function! ag#AgBuffer(cmd, args)
   let l:bufs = filter(range(1, bufnr('$')), 'buflisted(v:val)')
   let l:files = []
@@ -226,7 +230,7 @@ function! s:guessProjectRoot()
   while len(l:searchdirs) > 0
     " the forward slash works as a dirsep on Windows too.
     let l:searchdir = join(l:searchdirs, '/') . '/'
-    for l:marker in ['.rootdir', '.git', '.hg', '.svn', 'bzr', '_darcs', 'build.xml']
+    for l:marker in g:ag_working_path_root_markers
       let l:item = l:searchdir . l:marker
       if filereadable(l:item) || isdirectory(l:item)
         " found it! Return the dir
